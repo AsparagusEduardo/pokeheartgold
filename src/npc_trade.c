@@ -39,7 +39,7 @@ NPCTradeAppData *NPCTradeApp_Init(HeapID heapId, NpcTradeNum tradeno) {
         String *name;
         name = _GetNpcTradeName(heapId, NPC_TRADE_OT_NUM(tradeno));
         CopyStringToU16Array(name, strbuf, 128);
-        String_Delete(name);
+        String_Free(name);
     }
     Save_Profile_PlayerName_Set(ret->profile, strbuf);
     PlayerProfile_SetTrainerGender(ret->profile, ret->trade_dat->gender);
@@ -74,7 +74,7 @@ void NPCTrade_MakeAndGiveLoanMon(FieldSystem *fieldSystem, NpcTradeNum tradeno, 
         mailno = ItemToMailId(trade_dat->heldItem);
         mail = CreateKenyaMail(mon, mailno, trade_dat->gender, name, trade_dat->otId);
         SetMonData(kenya, MON_DATA_MAIL_STRUCT, mail);
-        String_Delete(name);
+        String_Free(name);
         Heap_Free(mail);
     }
     Heap_Free(trade_dat);
@@ -94,7 +94,7 @@ Mail *NPCTrade_MakeKenyaMail(void) {
     name = _GetNpcTradeName(HEAP_ID_FIELD, NPC_TRADE_OT_NUM(NPC_TRADE_KENYA_SPEAROW));
     mailno = ItemToMailId(trade_dat->heldItem);
     mail = CreateKenyaMail(mon, mailno, trade_dat->gender, name, trade_dat->otId);
-    String_Delete(name);
+    String_Free(name);
     Heap_Free(trade_dat);
     Heap_Free(mon);
     return mail;
@@ -199,7 +199,7 @@ static void _CreateTradeMon(Pokemon *mon, NPCTrade *trade_dat, u32 level, NpcTra
     heapId_2 = (int)heapId;
     name = _GetNpcTradeName((HeapID)heapId_2, tradeno);
     SetMonData(mon, MON_DATA_NICKNAME_STRING, name);
-    String_Delete(name);
+    String_Free(name);
 
     nickname_flag = TRUE;
     SetMonData(mon, MON_DATA_HAS_NICKNAME, &nickname_flag);
@@ -221,7 +221,7 @@ static void _CreateTradeMon(Pokemon *mon, NPCTrade *trade_dat, u32 level, NpcTra
 
     name = _GetNpcTradeName((HeapID)heapId_2, NPC_TRADE_OT_NUM(tradeno));
     SetMonData(mon, MON_DATA_OT_NAME_2, name);
-    String_Delete(name);
+    String_Free(name);
 
     SetMonData(mon, MON_DATA_OT_GENDER, &trade_dat->gender);
     SetMonData(mon, MON_DATA_GAME_LANGUAGE, &trade_dat->language);

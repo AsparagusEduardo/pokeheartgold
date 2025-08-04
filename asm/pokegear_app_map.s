@@ -1957,23 +1957,23 @@ ov101_021E862C: ; 0x021E862C
 	add r4, r0, #0
 	add r0, #0xb4
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0xa4
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0xa0
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0x9c
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0x90
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0x8c
 	ldr r0, [r0]
@@ -13832,35 +13832,35 @@ ov101_021EE2E8: ; 0x021EE2E8
 	add r4, r0, #0
 	add r0, #0xb4
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0xb0
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0xac
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0xa8
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0xa4
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0xa0
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0x9c
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0x90
 	ldr r0, [r0]
-	bl String_Delete
+	bl String_Free
 	add r0, r4, #0
 	add r0, #0x8c
 	ldr r0, [r0]

@@ -6,42 +6,41 @@
 #include "heap.h"
 #include "math_util.h"
 
-#define STRING_MAGIC (0xB6F8D2EC)
-#define STRING_INVAL (0xB6F8D2ED)
+#define STRING_MAGIC_NUMBER (0xB6F8D2EC)
 
-#define ASSERT_STRING(str)                       \
-    do {                                         \
-        GF_ASSERT(str != NULL);                  \
-        GF_ASSERT((str)->magic == STRING_MAGIC); \
-    } while (0)
-
-String *String_New(u32 maxsize, HeapID heapId) {
-    String *ret = (String *)AllocFromHeap(heapId, 2 * maxsize + sizeof(String) + sizeof(u16));
-    if (ret != NULL) {
-        ret->magic = STRING_MAGIC;
-        ret->maxsize = maxsize;
-        ret->size = 0;
-        ret->data[0] = EOS;
-    }
-    return ret;
+static inline void String_Check(const String *string)
+{
+    GF_ASSERT(string != NULL);
+    GF_ASSERT(string->magic == STRING_MAGIC_NUMBER);
 }
 
-void String_Delete(String *string) {
-    ASSERT_STRING(string);
-    string->magic = STRING_INVAL;
+String *String_New(u32 maxSize, HeapID heapID) {
+    String *str = AllocFromHeap(heapID, 2 * maxSize + sizeof(String) + sizeof(u16));
+    if (str != NULL) {
+        str->magic = STRING_MAGIC_NUMBER;
+        str->maxSize = maxSize;
+        str->size = 0;
+        str->data[0] = EOS;
+    }
+    return str;
+}
+
+void String_Free(String *string) {
+    String_Check(string);
+    string->magic = STRING_MAGIC_NUMBER + 1;
     Heap_Free(string);
 }
 
 void String_SetEmpty(String *string) {
-    ASSERT_STRING(string);
+    String_Check(string);
     string->size = 0;
     string->data[0] = EOS;
 }
 
 void String_Copy(String *dest, const String *src) {
-    ASSERT_STRING(dest);
-    ASSERT_STRING(src);
-    if (dest->maxsize > src->size) {
+    String_Check(dest);
+    String_Check(src);
+    if (dest->maxSize > src->size) {
         memcpy(dest->data, src->data, (src->size + 1) * 2);
         dest->size = src->size;
         return;
@@ -49,10 +48,10 @@ void String_Copy(String *dest, const String *src) {
     GF_ASSERT(FALSE);
 }
 
-String *String_Dup(const String *src, HeapID heapId) {
+String *String_Dup(const String *src, HeapID heapID) {
     String *ret;
-    ASSERT_STRING(src);
-    ret = String_New(src->size + 1, heapId);
+    String_Check(src);
+    ret = String_New(src->size + 1, heapID);
     if (ret != NULL) {
         String_Copy(ret, src);
     }
@@ -99,12 +98,12 @@ void String16_FormatInteger(String *str, int num, u32 ndigits, PrintingMode strC
         CHAR_9,
     };
 
-    ASSERT_STRING(str);
+    String_Check(str);
 
     const u16 *charbase;
     BOOL isNegative = (num < 0);
 
-    if (str->maxsize > ndigits + isNegative) {
+    if (str->maxSize > ndigits + isNegative) {
         charbase = (whichCharset == 0) ? sCharset_JP : sCharset_EN;
         String_SetEmpty(str);
         if (isNegative) {
@@ -185,12 +184,12 @@ void String16_FormatUnsignedLongLong(String *str, u64 num, u32 ndigits, Printing
         CHAR_9,
     };
 
-    ASSERT_STRING(str);
+    String_Check(str);
 
     const u16 *charbase;
     BOOL isNegative = (num < 0);
 
-    if (str->maxsize > ndigits + isNegative) {
+    if (str->maxSize > ndigits + isNegative) {
         charbase = (whichCharset == 0) ? sCharset_JP : sCharset_EN;
         String_SetEmpty(str);
         if (isNegative) {
@@ -247,8 +246,8 @@ s64 String_atoi(String *str, BOOL *flag) {
 }
 
 BOOL String_Compare(String *str1, String *str2) {
-    ASSERT_STRING(str1);
-    ASSERT_STRING(str2);
+    String_Check(str1);
+    String_Check(str2);
 
     for (int i = 0; str1->data[i] == str2->data[i]; i++) {
         if (str1->data[i] == EOS) {
@@ -259,12 +258,12 @@ BOOL String_Compare(String *str1, String *str2) {
 }
 
 u16 String_GetLength(String *str) {
-    ASSERT_STRING(str);
+    String_Check(str);
     return str->size;
 }
 
-int String_CountLines(volatile String *str) {
-    ASSERT_STRING(str);
+int String_CountLines(const String *str) {
+    String_Check(str);
 
     int i, nline;
     for (i = 0, nline = 1; i < str->size; i++) {
@@ -275,9 +274,9 @@ int String_CountLines(volatile String *str) {
     return nline;
 }
 
-void String_GetLineN(String *dest, volatile String *src, u32 n) {
-    ASSERT_STRING(src);
-    ASSERT_STRING(dest);
+void String_GetLineN(String *dest, const String *src, u32 n) {
+    String_Check(src);
+    String_Check(dest);
 
     int i = 0;
     if (n != 0) {
@@ -306,7 +305,7 @@ void String_RadioAddStatic(String *string, u8 level) {
     int str_len;
     int i;
 
-    ASSERT_STRING(string);
+    String_Check(string);
     str_len = String_GetLength(string); // the result is never used
     for (i = 0; i < string->size - 1; i++) {
         if (string->data[i] != CHAR_SPACE && ((MTRandom() / 256u) % 101) < level) {
@@ -323,10 +322,10 @@ void String_RadioAddStatic(String *string, u8 level) {
 }
 
 void CopyU16ArrayToString(String *str, const u16 *buf) {
-    ASSERT_STRING(str);
+    String_Check(str);
 
     for (str->size = 0; *buf != EOS;) {
-        if (str->size >= str->maxsize - 1) {
+        if (str->size >= str->maxSize - 1) {
             GF_ASSERT(FALSE);
             break;
         }
@@ -336,9 +335,9 @@ void CopyU16ArrayToString(String *str, const u16 *buf) {
 }
 
 void CopyU16ArrayToStringN(String *str, const u16 *buf, u32 length) {
-    ASSERT_STRING(str);
+    String_Check(str);
 
-    if (length <= str->maxsize) {
+    if (length <= str->maxSize) {
         int i;
         memcpy(str->data, buf, length * 2);
         for (i = 0; i < length; i++) {
@@ -356,7 +355,7 @@ void CopyU16ArrayToStringN(String *str, const u16 *buf, u32 length) {
 }
 
 void CopyStringToU16Array(const String *str, u16 *buf, u32 length) {
-    ASSERT_STRING(str);
+    String_Check(str);
 
     if (str->size + 1 <= length) {
         memcpy(buf, str->data, (u32)((str->size + 1) * 2));
@@ -366,16 +365,16 @@ void CopyStringToU16Array(const String *str, u16 *buf, u32 length) {
 }
 
 u16 *String_cstr(String *str) {
-    ASSERT_STRING(str);
+    String_Check(str);
 
     return str->data;
 }
 
 void String_Cat(String *dest, String *src) {
-    ASSERT_STRING(dest);
-    ASSERT_STRING(src);
+    String_Check(dest);
+    String_Check(src);
 
-    if (dest->size + src->size + 1 <= dest->maxsize) {
+    if (dest->size + src->size + 1 <= dest->maxSize) {
         memcpy(dest->data + dest->size, src->data, (u32)(2 * (src->size + 1)));
         dest->size += src->size;
         return;
@@ -384,9 +383,9 @@ void String_Cat(String *dest, String *src) {
 }
 
 void String_AddChar(String *str, u16 val) {
-    ASSERT_STRING(str);
+    String_Check(str);
 
-    if (str->size + 1 < str->maxsize) {
+    if (str->size + 1 < str->maxSize) {
         str->data[str->size++] = val;
         str->data[str->size] = EOS;
         return;
@@ -430,7 +429,7 @@ void String_Cat_HandleTrainerName(String *dest, String *src) {
 }
 
 void String_UpperCharN(String *str, int n) {
-    ASSERT_STRING(str);
+    String_Check(str);
 
     if (str->size > n) {
         if (str->data[n] >= CHAR_a && str->data[n] <= CHAR_z) {

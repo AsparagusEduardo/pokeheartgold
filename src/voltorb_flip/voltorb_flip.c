@@ -1548,7 +1548,7 @@ static void PrintMessageOnWindow(VoltorbFlipAppWork *work, FontID fontId, u8 msg
     AddTextPrinterParameterizedWithColor(window, fontId, str, x, y, TEXT_SPEED_NOTRANSFER, textColor, 0);
 
     ScheduleWindowCopyToVram(window);
-    String_Delete(str);
+    String_Free(str);
 }
 
 static void PrintMessageToSmallWindow(VoltorbFlipAppWork *work, int msgNo) {
@@ -1563,7 +1563,7 @@ static void PrintMessageToSmallWindow(VoltorbFlipAppWork *work, int msgNo) {
 
     AddTextPrinterParameterized(window, 1, str, 0, 0, 0xff, 0);
     ScheduleWindowCopyToVram(window);
-    String_Delete(str);
+    String_Free(str);
     BgCommitTilemapBufferToVram(work->bgConfig, 3);
 }
 
@@ -1596,7 +1596,7 @@ static void PrintTextWindow(VoltorbFlipAppWork *work, int msgNo, int a2) {
 static BOOL IsPrinterFinished(VoltorbFlipAppWork *work) {
     if (!TextPrinterCheckActive(work->printerId)) {
         if (work->string != NULL) {
-            String_Delete(work->string);
+            String_Free(work->string);
             work->string = NULL;
         }
         return TRUE;

@@ -1376,7 +1376,7 @@ u8 BattleSystem_PrintTrainerMessage(BattleSystem *bsys, int trainerId, int battl
             FillWindowPixelBuffer(window, 0xFF);
             String_Copy(bsys->msgBuffer, msg);
             index = AddTextPrinterParameterized(window, 1, bsys->msgBuffer, 0, 0, delay, ov12_0223CF14);
-            String_Delete(msg);
+            String_Free(msg);
         } else {
             MsgData *data;
             String *msg;
@@ -1407,7 +1407,7 @@ u8 BattleSystem_PrintTrainerMessage(BattleSystem *bsys, int trainerId, int battl
             FillWindowPixelBuffer(window, 0xFF);
             String_Copy(bsys->msgBuffer, msg);
             index = AddTextPrinterParameterized(window, 1, bsys->msgBuffer, 0, 0, delay, ov12_0223CF14);
-            String_Delete(msg);
+            String_Free(msg);
             DestroyMsgData(data);
         }
     } else {
@@ -1929,7 +1929,7 @@ static void BattleMessage_BufferBoxName(BattleSystem *bsys, int bufferIndex, int
 static void BattleMessage_ExpandPlaceholders(BattleSystem *bsys, MsgData *data, BattleMessage *msg) {
     String *str = NewString_ReadMsgData(data, msg->id);
     StringExpandPlaceholders(bsys->msgFormat, bsys->msgBuffer, str);
-    String_Delete(str);
+    String_Free(str);
 }
 
 static BOOL ov12_0223CF14(struct TextPrinterTemplate *template, u16 glyphId) {

@@ -163,7 +163,7 @@
 .public TouchscreenHitbox_PointIsIn
 .public GF_AssertFail
 .public String_New
-.public String_Delete
+.public String_Free
 .public String_SetEmpty
 .public String_CountLines
 .public String_GetLineN
